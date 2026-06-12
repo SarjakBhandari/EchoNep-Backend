@@ -1,0 +1,15 @@
+fastapi>=0.115.0
+uvicorn[standard]>=0.30.6
+pydantic>=2.8.2
+python-multipart>=0.0.9
+pyyaml>=6.0.1
+gtts>=2.5.3
+faster-whisper>=1.0.3
+transformers>=4.44.0
+torch>=2.2.0
+sentencepiece>=0.2.0
+indic-transliteration>=2.3.64
+pyttsx3>=2.98
+hf_xet>=1.1.6
+piper-tts>=1.2.0
+piper-phonemize>=1.1.0
