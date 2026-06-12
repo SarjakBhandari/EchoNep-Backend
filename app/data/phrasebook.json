@@ -1,0 +1,26 @@
+{
+  "en_np": {
+    "hello": "नमस्ते",
+    "how are you?": "तपाईंलाई कस्तो छ?",
+    "what is the price?": "मूल्य कति हो?",
+    "can it be cheaper?": "अलि सस्तो हुन्छ?",
+    "i want this": "मलाई यो चाहियो",
+    "please pack it": "कृपया यो प्याक गर्नुस्",
+    "where is the toilet?": "शौचालय कहाँ छ?",
+    "thank you": "धन्यवाद",
+    "please speak slowly": "कृपया बिस्तारै बोल्नुस्",
+    "i do not understand": "मलाई बुझिएन"
+  },
+  "np_en": {
+    "नमस्ते": "Hello",
+    "तपाईंलाई कस्तो छ?": "How are you?",
+    "मूल्य कति हो?": "What is the price?",
+    "अलि सस्तो हुन्छ?": "Can it be cheaper?",
+    "मलाई यो चाहियो": "I want this",
+    "कृपया यो प्याक गर्नुस्": "Please pack it",
+    "शौचालय कहाँ छ?": "Where is the toilet?",
+    "धन्यवाद": "Thank you",
+    "कृपया बिस्तारै बोल्नुस्": "Please speak slowly",
+    "मलाई बुझिएन": "I do not understand"
+  }
+}
