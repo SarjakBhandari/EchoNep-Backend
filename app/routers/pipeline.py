@@ -16,9 +16,27 @@ def _tts_language_for_text(text: str) -> str:
     return "ne" if any("\u0900" <= character <= "\u097F" for character in text) else "en"
 
 
+def _run_transcribe(audio_b64: str, direction: str, user_type: str | None) -> dict:
+    try:
+        return transcribe_audio(audio_b64, direction, user_type)
+    except ValueError as error:
+        raise HTTPException(status_code=422, detail=f"Invalid audio: {error}") from error
+    except Exception as error:
+        raise HTTPException(status_code=500, detail=f"ASR failed: {error}") from error
+
+
+def _run_translate(text: str, direction: str) -> dict:
+    try:
+        return translate_text(text, direction)
+    except ValueError as error:
+        raise HTTPException(status_code=422, detail=f"Invalid text: {error}") from error
+    except Exception as error:
+        raise HTTPException(status_code=500, detail=f"Translation failed: {error}") from error
+
+
 @router.post("/translate", response_model=TranslationResponse)
 def translate_endpoint(request: TranslateRequest) -> TranslationResponse:
-    translation = translate_text(request.text, request.direction)
+    translation = _run_translate(request.text, request.direction)
     translated_text = translation["translated_text"]
     romanized_text = romanize(translated_text) if request.direction == "en_np" else ""
     tts_text = translated_text
@@ -35,7 +53,7 @@ def translate_endpoint(request: TranslateRequest) -> TranslationResponse:
 
 @router.post("/asr", response_model=AsrResponse)
 def asr_endpoint(request: AsrRequest) -> AsrResponse:
-    asr_result = transcribe_audio(request.audio_b64, request.direction, request.user_type)
+    asr_result = _run_transcribe(request.audio_b64, request.direction, request.user_type)
     return AsrResponse(
         text=asr_result["text"],
         latency_ms=asr_result["latency_ms"],
@@ -52,13 +70,13 @@ def pipeline_endpoint(request: PipelineRequest) -> TranslationResponse:
     asr_result = {"latency_ms": 0.0, "backend": "skipped"}
 
     if request.audio_b64:
-        asr_result = transcribe_audio(request.audio_b64, request.direction, request.user_type)
+        asr_result = _run_transcribe(request.audio_b64, request.direction, request.user_type)
         source_text = asr_result["text"]
 
     if not source_text.strip():
         raise HTTPException(status_code=422, detail="No source text detected")
 
-    translation = translate_text(source_text, request.direction)
+    translation = _run_translate(source_text, request.direction)
     translated_text = translation["translated_text"]
     romanized_text = romanize(translated_text) if request.direction == "en_np" else ""
     tts_text = translated_text
