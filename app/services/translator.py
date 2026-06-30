@@ -52,6 +52,7 @@ def _load_model_cached(model_source: str):
             **load_kwargs,
         )
         model.eval()
+        model.to(settings.translation_device)
         _MODEL_LOAD_ERRORS.pop(model_source, None)
         return tokenizer, model
     except Exception as error:
@@ -97,13 +98,14 @@ def translate_text(text: str, direction: str) -> dict[str, Any]:
 
         tokenizer.src_lang = source_lang
         inputs = tokenizer(text, return_tensors="pt", truncation=True, max_length=128)
+        inputs = {key: value.to(settings.translation_device) for key, value in inputs.items()}
 
         # Safe forced BOS token handling for NLLB-200M
         forced_bos_token_id = tokenizer.convert_tokens_to_ids(target_lang)
         if forced_bos_token_id == tokenizer.unk_token_id:
             raise ValueError(f"Target language {target_lang} not recognized by tokenizer")
 
-        with torch.no_grad():
+        with torch.inference_mode():
             output = model.generate(
                 **inputs,
                 forced_bos_token_id=forced_bos_token_id,

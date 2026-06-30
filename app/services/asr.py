@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import base64
 import io
-import tempfile
 import time
 from functools import lru_cache
 
@@ -14,7 +13,12 @@ def load_asr_model():
     if settings.asr_backend == "faster_whisper":
         from faster_whisper import WhisperModel
 
-        return WhisperModel(settings.whisper_model_size, device="cpu", compute_type="int8")
+        return WhisperModel(
+            settings.whisper_model_size,
+            device=settings.asr_device,
+            compute_type=settings.asr_compute_type,
+            cpu_threads=settings.asr_cpu_threads,
+        )
 
     if settings.asr_backend == "whisper_openai":
         import whisper
@@ -56,12 +60,8 @@ def transcribe_audio(audio_b64: str, direction: str, user_type: str | None = Non
         if language == "en"
         else "देवनागरी नेपाली। दाम, मूल्य, छुट, साइज, संख्या, रुपियाँ, चाहिन्छ, छैन, कति, कति पर्छ, सस्तो, महँगो"
     )
-    with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as temp_file:
-        temp_file.write(audio_bytes)
-        temp_path = temp_file.name
-
     segments, _ = model.transcribe(
-        temp_path,
+        io.BytesIO(audio_bytes),
         language=language,
         beam_size=8,
         task="transcribe",
