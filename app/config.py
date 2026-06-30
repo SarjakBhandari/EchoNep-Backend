@@ -13,10 +13,26 @@ BASE_DIR = Path(__file__).resolve().parent
 PROJECT_DIR = BASE_DIR.parent
 
 
+def _detect_cuda() -> bool:
+    try:
+        import torch
+
+        return bool(torch.cuda.is_available())
+    except Exception:
+        return False
+
+
+_CUDA_AVAILABLE = _detect_cuda()
+
+
 @dataclass(frozen=True, slots=True)
 class Settings:
     asr_backend: str = "faster_whisper"
     whisper_model_size: str = "large-v3"
+    asr_device: str = "cuda" if _CUDA_AVAILABLE else "cpu"
+    asr_compute_type: str = "float16" if _CUDA_AVAILABLE else "int8"
+    asr_cpu_threads: int = 0 if _CUDA_AVAILABLE else max(4, (os.cpu_count() or 4))
+    translation_device: str = "cuda" if _CUDA_AVAILABLE else "cpu"
     translation_backend: str = "echo_nep"
     translation_model_name: str = "SarjakBhandari-230383/EchoNep"
     hf_token: str | None = os.getenv("HF_TOKEN") or os.getenv("HUGGINGFACE_HUB_TOKEN")
