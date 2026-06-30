@@ -8,16 +8,16 @@ def test_health():
     print(resp.json())
 
 def test_translation():
-    # English → Nepali
+    # English -> Nepali
     payload_en_np = {"text": "Hello, how are you?", "direction": "en_np"}
     resp = requests.post(f"{BASE_URL}/translate", json=payload_en_np)
-    print("\nEnglish → Nepali:")
+    print("\nEnglish -> Nepali:")
     print(resp.status_code, resp.json())
 
-    # # Nepali → English
+    # # Nepali -> English
     # payload_np_en = {"text": "तिमीलाई कस्तो छ?", "direction": "np_en"}
     # resp = requests.post(f"{BASE_URL}/translate", json=payload_np_en)
-    # print("\nNepali → English:")
+    # print("\nNepali -> English:")
     # print(resp.status_code, resp.json())
 
 
